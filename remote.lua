@@ -12,9 +12,10 @@ if not ip then
     wifi.sta.config(station_cfg)
     print(wifi.sta.getip())
 end
+
 -- 开启一个 8888 的端口
 -- 并通过 node.input() 调用 Lua 解释器控制 LED
-srv=net.createServer(net.TCP)
+--[[srv=net.createServer(net.TCP)
 srv:listen(8888,function(conn)
     conn:on("receive",function(conn,payload)
     node.input("gpio.mode(0, gpio.OUTPUT)")
@@ -29,3 +30,4 @@ http.get("http://httpbin.org/ip", nil, function(code, data)
       print(code, data)
     end
   end)
+--]]

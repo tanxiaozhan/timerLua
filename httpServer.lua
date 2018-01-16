@@ -9,11 +9,17 @@ function receiver(sck, data)
   print(data)
   
   local strdate=string.match(data,"gettime:%d+-%d+-%d+")
-  print(strdate.."\n")
-  strdate=string.sub(strdate,9)
-  print(strdate)
 
-  response[#response + 1] = strdate
+  print(strdate)
+  
+  if strdate then
+      strdate=string.sub(strdate,9)
+  else
+    strdate="OK"
+  end
+
+    print(strdate)
+    response[#response + 1] = strdate
   --response[#response + 1] = "e.g. content read from a file"
 
   -- sends and removes the first element from the 'response' table

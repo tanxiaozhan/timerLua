@@ -1,7 +1,7 @@
---从文件alarm.dat读取定时时间
-local alarmON={}
-local alarmOFF={}
-local strAlarm,temp,n
+---从文件alarm.dat读取定时时间
+alarmON={}       --定时开启时间，格式：启用标志（1-启用，0-不启用），时，分，秒，重复间隔天数
+alarmOFF={}      --定时关闭时间，格式：时，分，秒
+local strAlarm,temp,i
 
 --初始化定时时间
 for i=1,5
@@ -20,37 +20,40 @@ do
 end
 
 if file.open("alarm.dat","r") then
-    n=0
+    i=0
     strAlarm=file.readline()
     while(strAlarm)
     do
-      print(strAlarm)
-       n=n+1
+       i=i+1
        --获得定时开时间，格式：ON 定时启用标志（1-启用，0-不启用） 时:分:秒 replea:间隔天数
        temp=string.match(strAlarm,"ON %d %d+:%d+:%d+")
-       alarmON[n][1]=string.sub(temp,4,5)
-       alarmON[n][2]=string.sub(temp,6,8)
-       alarmON[n][3]=string.sub(temp,9,11)
-       alarmON[n][4]=string.sub(temp,12,14)
+
+       alarmON[i][1]=string.sub(temp,4,4)
+       alarmON[i][2]=string.sub(temp,6,7)
+       alarmON[i][3]=string.sub(temp,9,10)
+       alarmON[i][4]=string.sub(temp,12,13)
        temp=string.match(strAlarm,"replea:%d+")
-       alarmON[n][5]=string.match(temp,"%d+")
+       alarmON[i][5]=string.match(temp,"%d+")
 
        --获得定时关闭时间，格式：OFF 时:分:秒
        temp=string.match(strAlarm,"OFF %d+:%d+:%d+")
-       alarmOFF[n][1]=string.sub(temp,5,7)
-       alarmOFF[n][2]=string.sub(temp,8,10)
-       alarmOFF[n][3]=string.sub(temp,11,13)
+       alarmOFF[i][1]=string.sub(temp,5,6)
+       alarmOFF[i][2]=string.sub(temp,8,9)
+       alarmOFF[i][3]=string.sub(temp,11,12)
        
     strAlarm=file.readline()
     end
     file.close()
 end
 
+--[[
 for i=1,5
 do 
     print("ON  " .. alarmON[i][1] .. " " .. alarmON[i][2] .. ":" .. alarmON[i][3] .. ":" .. alarmON[i][4] .. " " .. alarmON[i][5])
     print("OFF " .. alarmOFF[i][1] .. ":" .. alarmOFF[i][2] .. ":" .. alarmOFF[i][3])
     
 end
+--]]
+
 dofile("remote.lua")
---dofile("httpServer.lua")
+dofile("httpServer.lua")

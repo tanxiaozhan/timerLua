@@ -7,7 +7,3 @@ if fc then
     fc.close()
     fc=nil
 end
-
-
-
-

@@ -8,18 +8,34 @@ function receiver(sck, data)
 
   print(data)
   
-  local strdate=string.match(data,"gettime:%d+-%d+-%d+")
-
+  local operate=string.match(data,"getData")
+    if operate then
+        for i=1,5
+        do
+           response[#response+1]="alarmON[" .. i .. "]: " .. alarmON[i][1] .. " " .. 
+                                 alarmON[i][2] .. ":" .. alarmON[i][3] .. ":" .. alarmON[i][4] 
+                                                      .. "  replea:" .. alarmON[i][5] .. " ---- " 
+           response[#response+1]="alarmOFF[" .. i .."]:" .. alarmOFF[i][1] .. ":" .. alarmOFF[i][2] 
+                                  .. ":" .. alarmOFF[i][3] .. "<br>"
+        end
+    else
+        operate=string.match(data,"setData:%d,%d,%d%d:%d%d:%d%d,%d+")
+        print("operate=")
+        print(operate)
+        if operate then
+            local i
+            i=tonumber( string.sub(operate,9,9) )
+            alarmON[i][1]=string.sub(operate,11,11)
+            alarmON[i][2]=string.sub(operate,13,14)
+            alarmON[i][3]=string.sub(operate,16,17)
+            alarmON[i][4]=string.sub(operate,19,20)
+            alarmON[i][5]=string.sub(operate,22)
+            
+            response[#response+1]="setData success!"
+        end       
+    end
+    
   print(strdate)
-  
-  if strdate then
-      strdate=string.sub(strdate,9)
-  else
-    strdate="OK"
-  end
-
-    print(strdate)
-    response[#response + 1] = strdate
   --response[#response + 1] = "e.g. content read from a file"
 
   -- sends and removes the first element from the 'response' table

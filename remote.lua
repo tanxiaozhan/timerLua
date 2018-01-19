@@ -1,7 +1,7 @@
 -- 开启 Wifi 并获得 NodeMCU IP 地址
 --connect to Access Point (DO save config to flash)
 station_cfg={}
-local home=true
+local home=false
 if home then
     station_cfg.ssid="TRouter_4G"
     station_cfg.pwd="EinstTianchen#1974"

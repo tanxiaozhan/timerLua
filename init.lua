@@ -47,6 +47,70 @@ if file.open("alarm.dat","r") then
 end
 
 --[[
+--------------------------------------------------
+
+i2c初始化设置，GPIO12、GPIO14连接到DS3231实时钟芯片
+
+--------------------------------------------------
+ESP-07 GPIO Mapping
+IO index    ESP8266 pin
+    0 [*]   GPIO16
+    1       GPIO5
+    2       GPIO4
+    3       GPIO0
+    4       GPIO2
+    5       GPIO14
+    6       GPIO12      
+    7       GPIO13
+    8       GPIO15
+    9       GPIO3
+    10      GPIO1
+    11      GPIO9
+    12      GPIO10
+
+[*] D0(GPIO16) can only be used as gpio read/write. 
+No support for open-drain/interrupt/pwm/i2c/ow.
+--]]
+ds3231=require("ds3231")
+SDA, SCL = 6, 5
+i2c.setup(0, SDA, SCL, i2c.SLOW) -- call i2c.setup() only once
+local alarmId=1   --DS3231定时1
+ds3231.setAlarm(1,ds3231.EVERYSECOND)
+--ds3231.enableAlarm(alarmId)
+second, minute, hour, day, date, month, year = ds3231.getTime()
+
+-- Get current time
+print(string.format("Time & Date: %s:%s:%s %s/%s/%s", hour, minute, second, date, month, year))
+
+
+-- 使用后释放ds3231模块
+ds3231 = nil
+package.loaded["ds3231"]=nil
+
+------------------------------------------------
+--
+--设置pin1(GPIO5)为外部中断输入端
+--
+------------------------------------------------
+local pin = 1
+gpio.mode(pin,gpio.INT)
+local function getTimeDS3231(level)
+    require("ds3231")
+    second, minute, hour, day, date, month, year = ds3231.getTime()
+
+    print(string.format("Time & Date: %s:%s:%s %s/%s/%s", hour, minute, second, date, month, year))
+
+    ds3231.reloadAlarms()
+
+    -- 使用后释放ds3231模块
+    ds3231 = nil
+    package.loaded["ds3231"]=nil
+    
+end
+gpio.trig(pin, "down", getTimeDS3231)
+
+
+--[[
 for i=1,5
 do 
     print("ON  " .. alarmON[i][1] .. " " .. alarmON[i][2] .. ":" .. alarmON[i][3] .. ":" .. alarmON[i][4] .. " " .. alarmON[i][5])

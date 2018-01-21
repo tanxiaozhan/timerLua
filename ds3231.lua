@@ -94,7 +94,7 @@ function M.setTime(second, minute, hour, day, date, month, year, disOsc)
 end
 
 -- Reset alarmId flag to let alarm to be triggered again
-function M.reloadAlarms ()
+function M.reloadAlarms (almId)
   if bit == nil or bit.band == nil or bit.bor == nil then
     print("[ERROR] Module bit is required to use alarm function")
     return nil
@@ -114,7 +114,7 @@ function M.reloadAlarms ()
   i2c.write(id, 0x0F)
   i2c.write(id, d)
   i2c.stop(id)
-  print('[LOG] Alarm '..almId..' reloaded')
+  --print('[LOG] Alarm '..almId..' reloaded')
 end
 
 -- Enable alarmId bit. Let it to be triggered
@@ -140,7 +140,7 @@ function M.enableAlarm (almId)
   i2c.write(id, 0x0E)
   i2c.write(id, c)
   i2c.stop(id)
-  M.reloadAlarms()
+  M.reloadAlarms(almId)
   print('[LOG] Alarm '..almId..' enabled')
 end
 -- If almID equals 1 or 2 disable that alarm, otherwise disables both.

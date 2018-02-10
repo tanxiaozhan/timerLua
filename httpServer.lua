@@ -43,7 +43,8 @@ function indexHtml()
     }
 
     local second, minute, hour, day, date, month, year = ds3231.getTime()
-    local currentTime = string.format("%s-%s-%s,%s %02d:%02d:%02d", year+2000, month, date, days[day+1], hour, minute, second)
+    
+    local currentTime = string.format("%s-%s-%s %s %02d:%02d:%02d", year+2000, month, date, days[day], hour, minute, second)
 
     ds3231 = nil
     package.loaded["ds3231"]=nil
@@ -53,7 +54,7 @@ function indexHtml()
         "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' /><body>" ..
         "<table width='100%' border='0'>" ..
           "<tr><td align='center'>" .. "<h3>ESP8266定时控制器 V1.0</h3><br>" .. "</td></tr>" ..
-          "<tr><td align='center'>当前时间：" .. currentTime .. "<br></td></tr>" ..
+          "<tr><td align='center'>当前时间：" .. currentTime .. "<br><br></td></tr>" ..
           "<tr><td align='center'>"
     for i=1,5 do
         if alarmON[i][1]==1 then
@@ -68,11 +69,13 @@ function indexHtml()
                        "OFF:" .. string.format("%02d",alarmOFF[i][1]) ..  ":" .. 
                                  string.format("%02d",alarmOFF[i][2]) .. ":" .. 
                                  string.format("%02d",alarmOFF[i][3]) .. "　" ..
-                                 "<a href='setAlarm.html?editAlarmNo=" .. i .. "'>编辑</a><br>"
+                                 "<a href='setAlarm.html?editAlarmNo=" .. i .. "'>编辑</a><br><br>"
                                  
     end
     i=nil
      tempHtml[#tempHtml+1]="</td></tr>" ..
+        "<tr><td align='center'><br><a href='?OP=open&auto=0'><button>手动开</button></a> 　　　　<a href='?OP=close&auto=0'><button>手动关</button></a></td></tr>"
+     tempHtml[#tempHtml+1]=  
         "<tr><td align='center'><br><form name='form1' method='post' action=''>" ..
         "<input type='hidden' id='strDate' name='strDate'>　　　　" ..
         "<input type='button' name='setTime' onclick=genTime(this.form); value=' 校  时 '>" ..
@@ -82,8 +85,8 @@ function indexHtml()
         "function genTime(f){" ..
         "var d = new Date();" ..
         "var strD;" ..
-        "strD=d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate() +'-'+ d.getDay()+'-';" ..
-        "strD=strD + d.getHours() +'-' + d.getMinutes() +'-' + d.getSeconds() + 'end';" ..
+        "strD=d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate() + '-' + (d.getDay()+1) + '-';" ..
+        "strD=strD + d.getHours() + '-' + d.getMinutes() + '-' + d.getSeconds() + 'end';" ..
         "document.getElementById('strDate').value=strD;" ..
         "f.submit();}" ..
         "</Script>"
@@ -179,6 +182,18 @@ function receiver(sck, data)
                 response=indexHtml()
             else
             
+                response=indexHtml()
+            end
+            
+            htmlFile=string.match(data,"OP=%a+")
+            if htmlFile then
+                if string.match(htmlFile,"open") then
+                    gpio.write(drvPin,gpio.HIGH)
+                else
+                    gpio.write(drvPin,gpio.LOW)
+                end
+                
+            else
                 response=indexHtml()
             end
         end

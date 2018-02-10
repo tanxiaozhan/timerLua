@@ -54,9 +54,9 @@ if file.open("alarm.dat","r") then
 end
 
 --设置pin2(GPIO4)为输出模式，驱动继电器
-local drvPin=2
+drvPin=2
 gpio.mode(drvPin, gpio.OUTPUT)
-
+gpio.write(drvPin,gpio.LOW)
 --[[
 --------------------------------------------------
 i2c初始化设置，GPIO12、GPIO14连接到DS3231实时钟芯片
@@ -80,7 +80,7 @@ IO index    ESP8266 pin
 No support for open-drain/interrupt/pwm/i2c/ow.
 --]]
 ds3231=require("ds3231")
-SDA, SCL = 6, 5
+local SDA, SCL = 6, 5
 i2c.setup(0, SDA, SCL, i2c.SLOW) -- call i2c.setup() only once
 local alarmId=1   --DS3231定时1
 ds3231.setAlarm(alarmId,ds3231.EVERYSECOND)
@@ -88,7 +88,7 @@ ds3231.setAlarm(alarmId,ds3231.EVERYSECOND)
 second, minute, hour, day, date, month, year = ds3231.getTime()
 
 -- Get current time
-print(string.format("Time & Date: %s:%s:%s %s/%s/%s", hour, minute, second, date, month, year+2000))
+print(string.format("Time & Date: %s:%s:%s %s-%s-%s", hour, minute, second, year+2000, month, date))
 
 
 alarmId=nil
@@ -149,3 +149,4 @@ gpio.trig(pin, "down", getTimeDS3231)
 dofile("wifi.lua")
 --启用http服务
 dofile("httpServer.lua")
+dofile("telnet.lua")
